@@ -49,18 +49,19 @@ CREATE TABLE alimento (
     nome_alimento VARCHAR(100) NOT NULL,
     id_categoriapopular INT,
     id_categoriacientifica INT,
-	classificacao_alimento VARCHAR(100),
+    classificacao_alimento VARCHAR(100),
     composicao_nutricional VARCHAR(500) NOT NULL,
     alimento_regional BOOLEAN,
     informacoes_educativas varchar (400),
     selo_inspecao BOOLEAN,
     FOREIGN KEY (id_categoriacientifica) REFERENCES categoria_cientifica(id_categoriacientifica),
     FOREIGN KEY (id_categoriapopular) REFERENCES categoria_popular(id_categoriapopular),
-    CONSTRAINT chk_classificacao_alimento CHECK (classificacao_alimento IN ('Natural', 'Minimamente Processado', 'Processado'))
+    CONSTRAINT chk_classificacao_alimento CHECK (classificacao_alimento IN ('N', 'MP', 'P'))
 );
+COMMENT ON COLUMN alimento.classificacao_alimento IS 'N significa Natural, MP significa Minimamente Processado, P significa Processado.';
 
-  create table subcategoria_popular(
-	id_subcategoria INT NOT NULL PRIMARY KEY,
+create table subcategoria_popular(
+    id_subcategoria INT NOT NULL PRIMARY KEY,
     id_categoriapopular INT,
     FOREIGN KEY (id_categoriapopular) REFERENCES categoria_popular(id_categoriapopular)
  );
@@ -125,7 +126,7 @@ create table promocoes(
 create table ecomidamarket(
     id_destaque int not null primary key,
     id_produto int,
-	texto_produto text,
+    texto_produto text,
     id_imagem int,
     id_barraquinha int,
     foreign key (id_produto) references produto(id_produto),
@@ -175,8 +176,9 @@ CREATE TABLE chat (
     data_envio DATE,
     tipo_remetente VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_pedidos) REFERENCES pedidos(id_pedidos),
-    CONSTRAINT chk_tipo_remetente CHECK (tipo_remetente IN ('consumidor', 'vendedor', 'administrador'))
+    CONSTRAINT chk_tipo_remetente CHECK (tipo_remetente IN ('C', 'A', 'ADM'))
 );
+COMMENT ON COLUMN chat.tipo_remetente IS 'C significa consumidor, A significa agricultor, ADM significa administrador.';
 
 CREATE TABLE suporte (
     id_suporte INT NOT NULL PRIMARY KEY,
@@ -222,8 +224,8 @@ create table produtos_pedidos(
     valor_embalagem decimal,
     valor_desconto decimal,
     valor_total decimal,
-	foreign key (id_produto) references produto(id_produto),
-	foreign key (id_pedidos) references pedidos(id_pedidos)
+    foreign key (id_produto) references produto(id_produto),
+    foreign key (id_pedidos) references pedidos(id_pedidos)
  );
 
 create table estoque(
@@ -232,10 +234,10 @@ create table estoque(
     id_barraquinha INT,
     quantidade decimal,
     valor_quantidade decimal,
-	foreign key (id_produto) references produto(id_produto),
-	foreign key (id_barraquinha) references barraquinha(id_barraquinha)
+    foreign key (id_produto) references produto(id_produto),
+    foreign key (id_barraquinha) references barraquinha(id_barraquinha)
  );
- 
+   
 
  CREATE TABLE cadastro_agricultor (
     id_cadastro_agricultor INT PRIMARY KEY,  
@@ -252,18 +254,19 @@ CREATE TABLE visitacao (
     id_barraquinha INT NOT NULL,
     aberta_visita BOOLEAN NOT NULL, 
     cobra_visita BOOLEAN NOT NULL,
-	valor_visita NUMERIC,
+    valor_visita DECIMAL NOT NULL,
     producao_anos INT,         
     certificacoes TEXT,        
-     FOREIGN KEY (id_barraquinha) REFERENCES barraquinha(id_barraquinha)
+    FOREIGN KEY (id_barraquinha) REFERENCES barraquinha(id_barraquinha)
 );
 CREATE TABLE medidas_caseiras (
     id_medidas_caseiras INT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
     tipo VARCHAR(10) NOT NULL,
     medida_padrao_equivalente VARCHAR(20) NOT NULL,
-    CONSTRAINT chk_tipo_medida CHECK (tipo IN ('peso', 'volume', 'contagem', 'area'))
+    CONSTRAINT chk_tipo_medida CHECK (tipo IN ('P', 'Vol', 'Cont', 'A'))
 );
+COMMENT ON COLUMN usuario.vinculo IS 'P significa peso, Vol significa volume, CONT significa contagem, A siginifica área.';
 CREATE TABLE beneficiamento (
     id_beneficiamento INT PRIMARY KEY,
     id_barraquinha INT,
@@ -273,14 +276,14 @@ CREATE TABLE beneficiamento (
     tratamentos TEXT,
     certificacoes TEXT,
     data_validade DATE,
-	FOREIGN KEY (id_barraquinha) REFERENCES barraquinha(id_barraquinha),
-	FOREIGN KEY (id_produto) REFERENCES produto(id_produto)  	
+    FOREIGN KEY (id_barraquinha) REFERENCES barraquinha(id_barraquinha),
+    FOREIGN KEY (id_produto) REFERENCES produto(id_produto)  	
 );
 CREATE TABLE documentos (
     id_documento INT PRIMARY KEY,
     nome_documento VARCHAR (300),
-	data_emisao DATE,
-	data_validade DATE
+    data_emisao DATE,
+    data_validade DATE
 );
 CREATE TABLE propriedade (
     id_propriedade INT PRIMARY KEY,              
