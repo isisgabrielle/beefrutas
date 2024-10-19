@@ -1,198 +1,221 @@
 package interfaceJogo;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.KeyAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import elementosDinamicos.Abacate;
+import elementosDinamicos.Acerola;
+import elementosDinamicos.Amora;
+import elementosDinamicos.Coco;
+import elementosDinamicos.Fruta;
+import elementosDinamicos.Goiaba;
+import elementosDinamicos.Jogador;
+import elementosDinamicos.Laranja;
+import elementosDinamicos.Maracuja;
 import floresta.Arvore;
 import floresta.Floresta;
 import floresta.Grama;
 import floresta.Pedra;
-import fruta.Abacate;
-import fruta.Acerola;
-import fruta.Amora;
-import fruta.Coco;
-import fruta.Fruta;
-import fruta.Goiaba;
-import fruta.Laranja;
-import fruta.Maracuja;
-import jogadores.JogadorDois;
-import jogadores.JogadorUm;
 
-
-public class JanelaPartida {
-	 	private JFrame janela;
-	    private JogadorUm jogadorUm; 
-	    private Floresta[][] ladrilho;
-	    private Object[][] ladrilhoDinamico;
-	    private JPanel panelDinamico;
-	    private MatrizTerreno jogo1;
+public class JanelaPartida extends JFrame implements KeyListener, ActionListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Jogador[] jogadores;
+	private int[] variaveisInicializacao;
+	private Floresta[][] ladrilho;
+	private Fruta[] ladrilhoDinamico;	
+	private int vez;
 	
-	
-	public JanelaPartida(){
-		janela = new JFrame();
-		janela.setTitle("BeeFrutas");
-		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		janela.setSize(665, 685);
-		janela.setLocationRelativeTo(null);
-		janela.setVisible(true);
-		janela.setResizable(false);
-		 
-	    panelDinamico = new JPanel();  
-	    panelDinamico.setLayout(null);
-	    panelDinamico.setVisible(true);
-	    panelDinamico.setOpaque(false);
-	    panelDinamico.setSize(650, 650);
-	    
-        janela.add(panelDinamico);
-
-	    panelDinamico.setFocusable(true);
-	    panelDinamico.requestFocusInWindow();
-	    
-	    janela.addKeyListener(new KeyAdapter() {
-	            public void keyPressed(KeyEvent e) {
-	                int keyCode = e.getKeyCode();
-	                int novoX = jogadorUm.getX();
-	                int novoY = jogadorUm.getY();
-
-	                switch (keyCode) {
-	                    case KeyEvent.VK_UP:    moverJogador(novoX, novoY - 1); break;
-	                    case KeyEvent.VK_DOWN:  moverJogador(novoX, novoY + 1); break;
-	                    case KeyEvent.VK_LEFT:  moverJogador(novoX - 1, novoY); break;
-	                    case KeyEvent.VK_RIGHT: moverJogador(novoX + 1, novoY); break;
-	                }
-	                moverJogador(novoX, novoY);
-	            }
-	        });
-	}
-	// função para mover o jogador
-
-	public void moverJogador(int novoX, int novoY) {
-	    System.out.println("Tentando mover para: " + novoX + ", " + novoY);
-	    
-	    if (novoX >= 0 && novoX < jogo1.dimensao && novoY >= 0 && novoY < jogo1.dimensao) {
-	        if (jogo1.elementosEstaticos[novoX][novoY].equals("g ")) {
-	            System.out.println("Movendo jogador de: " + jogadorUm.getX() + ", " + jogadorUm.getY() + " para " + novoX + ", " + novoY);
-	            
-	            jogo1.elementosDinamicos[jogadorUm.getX()][jogadorUm.getY()] = "  "; 
-	            jogadorUm.setX(novoX);
-	            jogadorUm.setY(novoY);
-	            jogo1.elementosDinamicos[novoX][novoY] = "J "; 
-	            
-	            jogadorUm.setBounds(novoX * jogadorUm.getTamanhoIcone(), novoY * jogadorUm.getTamanhoIcone(),
-	                    jogadorUm.getTamanhoIcone(), jogadorUm.getTamanhoIcone());
-
-	            panelDinamico.revalidate();
-	            panelDinamico.repaint();
-	        }
-	    }
-	}
-
-    
-	
-	public void iniciarPartida(int dimensao, int pedras, int arvoreLaranja, int arvoreAbacate, int arvoreCoco, int arvoreAcerola, int arvoreAmora, int arvoreGoiaba,
-							   int maracuja, int laranja, int abacate, int coco, int acerola, int amora, int goiaba, int mochila, int bichadas, int maracujasPartida) {
-		  MatrizTerreno jogo1 = new MatrizTerreno(dimensao, pedras, arvoreLaranja, arvoreAbacate, arvoreCoco, arvoreAcerola, arvoreAmora, arvoreGoiaba,
-	                maracuja, laranja, abacate, coco, acerola, amora, goiaba);
-		  
-		int totalLadrilhos = dimensao*dimensao;
-		int totalElementos = pedras + arvoreLaranja + arvoreAbacate + arvoreCoco + arvoreAcerola + arvoreAmora + arvoreGoiaba + 
-							 maracuja + laranja + abacate + coco + acerola + amora + goiaba;
+	public JanelaPartida(int[] variaveisInicializacao){
 		
+		this.variaveisInicializacao = variaveisInicializacao;
+		
+		this.setTitle("BeeFrutas");
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setSize(665, 725);
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+		this.setResizable(false);
+		this.addKeyListener(this);
+		this.setFocusable(true);
+				
+		int dimensao = variaveisInicializacao[0];
+		int totalLadrilhos = dimensao*dimensao;
+		int totalElementos = 0;
+		for (int i = 1; i <= 14; i++) {
+			totalElementos = totalElementos + variaveisInicializacao[i];}
 		if (dimensao < 3 || dimensao > 25) {
-			janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING));
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 			throw new RuntimeException("A dimensão da floresta deve ser de no mínimo 3 ladrilhos e no máximo 25.");}
-		if (maracuja < 1) {
-			janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING));
+		if (variaveisInicializacao[8] < 1) {
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 			throw new RuntimeException("A floresta deve conter pelo menos 1 maracujá.");}
-		if (totalElementos > totalLadrilhos) {
-			janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING));
+		if (totalElementos > totalLadrilhos-2) {
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 			throw new RuntimeException("O número total de elementos não pode ultrapassar a quantidade de ladrilhos da floresta.");}
 		
 		else {
-			Floresta[][] ladrilho = new Floresta[dimensao][dimensao];
-			Object[][] ladrilhoDinamico = new Object[dimensao][dimensao];
+			vez = 1;
+			iniciarPartida();			
+		}
+	}
+	
+	private void iniciarPartida() {
+		int dimensao = this.variaveisInicializacao[0];
+		this.ladrilho = new Floresta[dimensao][dimensao];
+		this.ladrilhoDinamico = new Fruta[dimensao*dimensao];
+		this.jogadores = new Jogador[2];
+		int k = 0;
 			
-		    JLayeredPane camadas = new JLayeredPane();		
-			
-			
-			JPanel panelDinamico = new JPanel();
-			panelDinamico.setLayout(null);
-			panelDinamico.setVisible(true);
-			panelDinamico.setOpaque(false);
-			panelDinamico.setSize(650, 650);
-			
-			
-			JPanel panel = new JPanel(new GridLayout(dimensao, dimensao));
-			panel.setSize(650, 650);
+		JLayeredPane camadas = new JLayeredPane();		
 			
 			
-			jogo1.inicializarElementos();
-			jogo1.mostrarTerreno();
+		JPanel panelDinamico = new JPanel();
+		panelDinamico.setLayout(null);
+		panelDinamico.setVisible(true);
+		panelDinamico.setOpaque(false);
+		panelDinamico.setSize(650, 650);
 			
-			int tamanhoLadrilho = 650/dimensao;
-			JogadorUm jogadorUm = null; 
 			
-			for(int i = 0; i < dimensao; i++) {
-				for(int j = 0; j < dimensao; j++) {
-					
-					
-					if (!jogo1.elementosDinamicos[i][j].equals("  ")) {
-						switch (jogo1.elementosDinamicos[i][j]) {
-						case "m ": ladrilhoDinamico[i][j] = new Maracuja(j, i, tamanhoLadrilho); break;
-						case "l ": ladrilhoDinamico[i][j] = new Laranja(j, i, tamanhoLadrilho); break;
-						case "a ": ladrilhoDinamico[i][j] = new Abacate(j, i, tamanhoLadrilho); break;
-						case "c ": ladrilhoDinamico[i][j] = new Coco(j, i, tamanhoLadrilho); break;
-						case "r ": ladrilhoDinamico[i][j] = new Acerola(j, i, tamanhoLadrilho); break;
-						case "o ": ladrilhoDinamico[i][j] = new Amora(j, i, tamanhoLadrilho); break;
-						case "g ": ladrilhoDinamico[i][j] = new Goiaba(j, i, tamanhoLadrilho); break;
-						 case "ju ": 
-	                            jogadorUm = new JogadorUm(j, i, tamanhoLadrilho); // Inicializa o jogador
-	                            ladrilhoDinamico[i][j] = jogadorUm; System.out.println("Jogador está em: " + jogadorUm.getX() + ", " + jogadorUm.getY());
-	                            break; 
-						
-						case "jd ": ladrilhoDinamico[i][j] = new JogadorDois(j, i, tamanhoLadrilho); break;
+		JPanel panel = new JPanel(new GridLayout(dimensao, dimensao));
+		panel.setSize(650, 650);
+		 
+		JPanel rodape = new JPanel();
+	    rodape.setBackground(Color.GRAY);  
+	    rodape.setPreferredSize(new Dimension(400, 40)); 
 
-						}
-						panelDinamico.add((Component)ladrilhoDinamico[i][j]);	
+			
+		MatrizTerreno jogo1 = new MatrizTerreno(this.variaveisInicializacao);
+		jogo1.inicializarElementos();
+		//jogo1.mostrarTerreno();
+			
+		int tamanhoLadrilho = 650/dimensao;
+		
+	
+		this.jogadores[0] = new Jogador(0, 0, tamanhoLadrilho, 0, "Ciclano");
+		panelDinamico.add(jogadores[0]);
+		this.jogadores[1] = new Jogador(dimensao-1, dimensao-1, tamanhoLadrilho, 1, "Fulano");
+		panelDinamico.add(jogadores[1]);
+		
+		
+		for(int i = 0; i < dimensao; i++) {
+			for(int j = 0; j < dimensao; j++) {
+				if (jogo1.elementosDinamicos[i][j] != "  " && jogo1.elementosDinamicos[i][j] != "j0" && jogo1.elementosDinamicos[i][j] != "j1") {
+					switch (jogo1.elementosDinamicos[i][j]) {
+					case "m ": this.ladrilhoDinamico[k] = new Maracuja(j, i, tamanhoLadrilho); break;
+					case "l ": this.ladrilhoDinamico[k] = new Laranja(j, i, tamanhoLadrilho); break;
+					case "a ": this.ladrilhoDinamico[k] = new Abacate(j, i, tamanhoLadrilho); break;
+					case "c ": this.ladrilhoDinamico[k] = new Coco(j, i, tamanhoLadrilho); break;
+					case "r ": this.ladrilhoDinamico[k] = new Acerola(j, i, tamanhoLadrilho); break;
+					case "o ": this.ladrilhoDinamico[k] = new Amora(j, i, tamanhoLadrilho); break;
+					case "g ": this.ladrilhoDinamico[k] = new Goiaba(j, i, tamanhoLadrilho); break;
 					}
+					panelDinamico.add(this.ladrilhoDinamico[k]);	
+					k++;
+				}
 					
-					switch (jogo1.elementosEstaticos[i][j]) {
-					case "g ": ladrilho[i][j] = new Grama(tamanhoLadrilho); break;
-					case "P ": ladrilho[i][j] = new Pedra(tamanhoLadrilho); break;
-					case "AL": ladrilho[i][j] = new Arvore("Laranja", tamanhoLadrilho); break;
-					case "AA": ladrilho[i][j] = new Arvore("Abacate", tamanhoLadrilho); break;
-					case "AC": ladrilho[i][j] = new Arvore("Coco", tamanhoLadrilho); break;
-					case "AR": ladrilho[i][j] = new Arvore("Acerola", tamanhoLadrilho); break;
-					case "AO": ladrilho[i][j] = new Arvore("Amora", tamanhoLadrilho); break;
-					case "AG": ladrilho[i][j] = new Arvore("Goiaba", tamanhoLadrilho); break;
-					}
-					ladrilho[i][j].setBounds(j*tamanhoLadrilho, i*tamanhoLadrilho, tamanhoLadrilho, tamanhoLadrilho);
-					panel.add(ladrilho[i][j]);
+				switch (jogo1.elementosEstaticos[i][j]) {
+				case "g ": this.ladrilho[i][j] = new Grama(tamanhoLadrilho); break;
+				case "P ": this.ladrilho[i][j] = new Pedra(tamanhoLadrilho); break;
+				case "AL": this.ladrilho[i][j] = new Arvore("Laranja", tamanhoLadrilho); break;
+				case "AA": this.ladrilho[i][j] = new Arvore("Abacate", tamanhoLadrilho); break;
+				case "AC": this.ladrilho[i][j] = new Arvore("Coco", tamanhoLadrilho); break;
+				case "AR": this.ladrilho[i][j] = new Arvore("Acerola", tamanhoLadrilho); break;
+				case "AO": this.ladrilho[i][j] = new Arvore("Amora", tamanhoLadrilho); break;
+				case "AG": this.ladrilho[i][j] = new Arvore("Goiaba", tamanhoLadrilho); break;
+				}
+				
+				ladrilho[i][j].setBounds(tamanhoLadrilho, tamanhoLadrilho, tamanhoLadrilho, tamanhoLadrilho);
+				ladrilho[i][j].addActionListener(this);
+				panel.add(ladrilho[i][j]);
+			}
+		}
+		
+		camadas.add(panel, Integer.valueOf(1));
+		camadas.add(panelDinamico, Integer.valueOf(2));
+
+		this.add(camadas,BorderLayout.CENTER);
+		this.add(rodape, BorderLayout.SOUTH);
+		this.revalidate();
+
+			
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_UP: jogadores[vez].moverJogador(0, -1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila(); moverFrutasMochila(); break;
+		case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		case KeyEvent.VK_RIGHT: jogadores[vez].moverJogador(1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		case KeyEvent.VK_LEFT: jogadores[vez].moverJogador(-1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
+
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+				
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Vc pressionou o botão");
+		this.requestFocus();
+	}
+	
+	private int inverterVez(int vez) {
+		int tempVez = 0;
+		if (vez == 0) {
+			tempVez = 1;
+		}
+		if (vez == 1) {
+			tempVez = 0;
+		}
+		return tempVez;
+	}
+
+	private void colocaFrutasNaMochila() {
+		for (Fruta fruta : this.ladrilhoDinamico) {
+			if (fruta != null) {
+				if (fruta.x == jogadores[0].x && fruta.y == jogadores[0].y) {
+					fruta.estaNaMochila = 0;
+				}
+				if (fruta.x == jogadores[1].x && fruta.y == jogadores[1].y) {
+					fruta.estaNaMochila = 1;
 				}
 			}
-			
-			camadas.add(panel, Integer.valueOf(1));
-			camadas.add(panelDinamico, Integer.valueOf(2));
-			
-			janela.add(camadas);
-			 janela.revalidate();
-		        janela.repaint();
-			
-           
-           
-        }
-    }
-
-   
-        
+		}
+	}
+	
+	private void moverFrutasMochila() {
+		for (Fruta fruta : this.ladrilhoDinamico) {
+			if (fruta != null) {
+				if (fruta.estaNaMochila == 0) {
+					fruta.moverFrutaPara(jogadores[0].x, jogadores[0].y);
+				}
+				if (fruta.estaNaMochila == 1) {
+					fruta.moverFrutaPara(jogadores[1].x, jogadores[1].y);
+				}
+			}
+		}
+	}
 }
-
-
