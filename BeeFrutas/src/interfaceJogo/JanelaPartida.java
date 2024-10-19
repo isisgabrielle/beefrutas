@@ -1,6 +1,8 @@
 package interfaceJogo;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -23,7 +25,7 @@ import floresta.Floresta;
 import floresta.Grama;
 import floresta.Pedra;
 
-public class JanelaPartida extends JFrame implements KeyListener{
+public class JanelaPartida extends JFrame implements KeyListener, ActionListener{
 	/**
 	 * 
 	 */
@@ -32,6 +34,7 @@ public class JanelaPartida extends JFrame implements KeyListener{
 	private int[] variaveisInicializacao;
 	private Floresta[][] ladrilho;
 	private Fruta[] ladrilhoDinamico;	
+	private int vez;
 	
 	public JanelaPartida(int[] variaveisInicializacao){
 		
@@ -61,8 +64,8 @@ public class JanelaPartida extends JFrame implements KeyListener{
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 			throw new RuntimeException("O número total de elementos não pode ultrapassar a quantidade de ladrilhos da floresta.");}
 		
-		
 		else {
+			vez = 1;
 			iniciarPartida();			
 		}
 	}
@@ -89,14 +92,14 @@ public class JanelaPartida extends JFrame implements KeyListener{
 			
 		MatrizTerreno jogo1 = new MatrizTerreno(this.variaveisInicializacao);
 		jogo1.inicializarElementos();
-		jogo1.mostrarTerreno();
+		//jogo1.mostrarTerreno();
 			
 		int tamanhoLadrilho = 650/dimensao;
 		
 	
-		this.jogadores[0] = new Jogador(0, 0, tamanhoLadrilho, 0);
+		this.jogadores[0] = new Jogador(0, 0, tamanhoLadrilho, 0, "Ciclano");
 		panelDinamico.add(jogadores[0]);
-		this.jogadores[1] = new Jogador(dimensao-1, dimensao-1, tamanhoLadrilho, 1);
+		this.jogadores[1] = new Jogador(dimensao-1, dimensao-1, tamanhoLadrilho, 1, "Fulano");
 		panelDinamico.add(jogadores[1]);
 		
 		
@@ -128,6 +131,7 @@ public class JanelaPartida extends JFrame implements KeyListener{
 				}
 				
 				ladrilho[i][j].setBounds(tamanhoLadrilho, tamanhoLadrilho, tamanhoLadrilho, tamanhoLadrilho);
+				ladrilho[i][j].addActionListener(this);
 				panel.add(ladrilho[i][j]);
 			}
 		}
@@ -140,9 +144,6 @@ public class JanelaPartida extends JFrame implements KeyListener{
 			
 	}
 
-	
-	
-	
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -152,15 +153,11 @@ public class JanelaPartida extends JFrame implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
-		case KeyEvent.VK_UP: jogadores[0].moverJogador(0, -1);; break;
-		case KeyEvent.VK_DOWN: jogadores[0].moverJogador(0, 1);; break;
-		case KeyEvent.VK_RIGHT: jogadores[0].moverJogador(1, 0);; break;
-		case KeyEvent.VK_LEFT: jogadores[0].moverJogador(-1, 0);; break;
+		case KeyEvent.VK_UP: jogadores[vez].moverJogador(0, -1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila(); moverFrutasMochila(); break;
+		case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		case KeyEvent.VK_RIGHT: jogadores[vez].moverJogador(1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		case KeyEvent.VK_LEFT: jogadores[vez].moverJogador(-1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
 
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_1) {
-			System.out.println("Hello World");
 		}
 	}
 
@@ -169,4 +166,46 @@ public class JanelaPartida extends JFrame implements KeyListener{
 				
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Vc pressionou o botão");
+		this.requestFocus();
+	}
+	
+	private int inverterVez(int vez) {
+		int tempVez = 0;
+		if (vez == 0) {
+			tempVez = 1;
+		}
+		if (vez == 1) {
+			tempVez = 0;
+		}
+		return tempVez;
+	}
+
+	private void colocaFrutasNaMochila() {
+		for (Fruta fruta : this.ladrilhoDinamico) {
+			if (fruta != null) {
+				if (fruta.x == jogadores[0].x && fruta.y == jogadores[0].y) {
+					fruta.estaNaMochila = 0;
+				}
+				if (fruta.x == jogadores[1].x && fruta.y == jogadores[1].y) {
+					fruta.estaNaMochila = 1;
+				}
+			}
+		}
+	}
+	
+	private void moverFrutasMochila() {
+		for (Fruta fruta : this.ladrilhoDinamico) {
+			if (fruta != null) {
+				if (fruta.estaNaMochila == 0) {
+					fruta.moverFrutaPara(jogadores[0].x, jogadores[0].y);
+				}
+				if (fruta.estaNaMochila == 1) {
+					fruta.moverFrutaPara(jogadores[1].x, jogadores[1].y);
+				}
+			}
+		}
+	}
 }

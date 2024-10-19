@@ -21,6 +21,7 @@ public class Fruta extends JLabel{
 	public int x;
 	public int y;
 	protected String urlIcone;
+	public int estaNaMochila = 3;
 	
 	public Fruta(int x, int y, int tamanhoIcone){
 		setUrlIcone();
@@ -38,5 +39,11 @@ public class Fruta extends JLabel{
 	 */
 	public void setUrlIcone(){
 		this.urlIcone = "/imagens/fruta_generica.png";
+	}
+	
+	public void moverFrutaPara(int moverX, int moverY) {
+		this.x = moverX;
+		this.y = moverY;
+		this.setBounds(tamanhoIcone*x, tamanhoIcone*y, tamanhoIcone, tamanhoIcone);
 	}
 }
