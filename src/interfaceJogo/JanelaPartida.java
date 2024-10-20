@@ -13,7 +13,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import elementosDinamicos.Abacate;
@@ -40,6 +42,9 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 	private Floresta[][] ladrilho;
 	private Fruta[] ladrilhoDinamico;	
 	private int vez;
+	private JLabel labelVezJogador;
+	private JLabel labelPontosMovimento;
+	private boolean dadosRolados = false;
 	Dados dado1 = new Dados();
 	Dados dado2 = new Dados();
 	
@@ -95,31 +100,45 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		JPanel panel = new JPanel(new GridLayout(dimensao, dimensao));
 		panel.setSize(650, 650);
 		
-		JPanel dadoEBotao = new JPanel();
-	    dadoEBotao.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		JPanel panelDados = new JPanel();
+		Color verdeEscuro = new Color(0, 100, 0);
+	    panelDados.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 	    dado1.setPreferredSize(new Dimension(25, 25)); 
 	    dado2.setPreferredSize(new Dimension(25, 25));
-	    dadoEBotao.add(dado1);
-	    dadoEBotao.add(dado2);
-
+	    labelVezJogador = new JLabel("Vez de: " + vez);
+	    labelPontosMovimento = new JLabel("	Pontos Movimento: " + pontosMovimento);
+	    labelVezJogador.setPreferredSize(new Dimension(60, 25));
+	    labelPontosMovimento.setPreferredSize(new Dimension(120, 25));
+	    labelVezJogador.setForeground(verdeEscuro);
+	    labelPontosMovimento.setForeground(verdeEscuro);
+	    
+	   
+	    panelDados.add(labelVezJogador);
+	    panelDados.add(labelPontosMovimento);
+	    panelDados.add(dado1);
+	    panelDados.add(dado2);
+	    
 	    JButton rollButton = new JButton("Rolar dados");
 	    rollButton.addActionListener(new ActionListener() {
 	     @Override
 	     public void actionPerformed(ActionEvent e) {
 	    	 		 dado1.rolarDado(); 
 	    	 		 dado2.rolarDado();
-	            }
+	    	 		 pontosMovimento = dado1.getValorFace() + dado2.getValorFace();
+	    	 		 dadosRolados = true;
+	    	 		 labelPontosMovimento.setText("Pontos Movimento: " + pontosMovimento);
+	    	 		 JanelaPartida.this.requestFocusInWindow();}
 	        });
 
-	      rollButton.setPreferredSize(new Dimension(110, 25)); 
-	      dadoEBotao.add(rollButton);
-	      this.setVisible(true);
-		
+	    rollButton.setPreferredSize(new Dimension(110, 25)); 
+	    panelDados.add(rollButton);
+	    this.setVisible(true);
+	    
 		JPanel rodape = new JPanel();
 	    rodape.setBackground(Color.GRAY);  
 	    rodape.setPreferredSize(new Dimension(400, 35)); 
         rodape.setLayout(new BorderLayout()); 
-        rodape.add(dadoEBotao, BorderLayout.CENTER);
+        rodape.add(panelDados, BorderLayout.CENTER);
 			
 		MatrizTerreno jogo1 = new MatrizTerreno(this.variaveisInicializacao);
 		jogo1.inicializarElementos();
@@ -182,16 +201,34 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		
 	}
 
-	@Override
+	private int pontosMovimento = 0;
+	
 	public void keyPressed(KeyEvent e) {
-		int somaDados = dado1.getValorFace() + dado2.getValorFace();
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_UP: jogadores[vez].moverJogador(0, -1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila(); moverFrutasMochila(); break;
-		case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
-		case KeyEvent.VK_RIGHT: jogadores[vez].moverJogador(1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
-		case KeyEvent.VK_LEFT: jogadores[vez].moverJogador(-1, 0, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
-
+		this.requestFocusInWindow();
+		if (!dadosRolados) {
+		   JOptionPane.showMessageDialog(null, "Na sua vez você precisa rolar os dados antes de se mover.", "ERRO", JOptionPane.WARNING_MESSAGE);
+	        return; }
+		
+		if (pontosMovimento == 0) {
+		   pontosMovimento = dado1.getValorFace() + dado2.getValorFace();}
+		
+		if(pontosMovimento > 0) {
+		  switch(e.getKeyCode()) {
+		  case KeyEvent.VK_UP: jogadores[vez].moverJogador(0, -1, variaveisInicializacao[0]); colocaFrutasNaMochila(); moverFrutasMochila(); break;
+		  case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		  case KeyEvent.VK_RIGHT: jogadores[vez].moverJogador(1, 0, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
+		  case KeyEvent.VK_LEFT: jogadores[vez].moverJogador(-1, 0, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
 		}
+		
+		pontosMovimento--;
+		labelPontosMovimento.setText("Pontos Movimento: " + pontosMovimento);
+		
+        if (pontosMovimento == 0) {
+        	vez = inverterVez(vez);
+        	labelVezJogador.setText("Vez de: " + vez);
+        	dadosRolados = false; }
+		}
+		
 	}
 
 	@Override
