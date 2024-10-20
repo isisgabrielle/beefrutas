@@ -3,6 +3,7 @@ package interfaceJogo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -38,6 +40,8 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 	private Floresta[][] ladrilho;
 	private Fruta[] ladrilhoDinamico;	
 	private int vez;
+	Dados dado1 = new Dados();
+	Dados dado2 = new Dados();
 	
 	public JanelaPartida(int[] variaveisInicializacao){
 		
@@ -80,8 +84,7 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		this.jogadores = new Jogador[2];
 		int k = 0;
 			
-		JLayeredPane camadas = new JLayeredPane();		
-			
+		JLayeredPane camadas = new JLayeredPane();			
 			
 		JPanel panelDinamico = new JPanel();
 		panelDinamico.setLayout(null);
@@ -89,14 +92,34 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		panelDinamico.setOpaque(false);
 		panelDinamico.setSize(650, 650);
 			
-			
 		JPanel panel = new JPanel(new GridLayout(dimensao, dimensao));
 		panel.setSize(650, 650);
-		 
+		
+		JPanel dadoEBotao = new JPanel();
+	    dadoEBotao.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
+	    dado1.setPreferredSize(new Dimension(25, 25)); 
+	    dado2.setPreferredSize(new Dimension(25, 25));
+	    dadoEBotao.add(dado1);
+	    dadoEBotao.add(dado2);
+
+	    JButton rollButton = new JButton("Rolar dados");
+	    rollButton.addActionListener(new ActionListener() {
+	     @Override
+	     public void actionPerformed(ActionEvent e) {
+	    	 		 dado1.rolarDado(); 
+	    	 		 dado2.rolarDado();
+	            }
+	        });
+
+	      rollButton.setPreferredSize(new Dimension(110, 25)); 
+	      dadoEBotao.add(rollButton);
+	      this.setVisible(true);
+		
 		JPanel rodape = new JPanel();
 	    rodape.setBackground(Color.GRAY);  
-	    rodape.setPreferredSize(new Dimension(400, 40)); 
-
+	    rodape.setPreferredSize(new Dimension(400, 35)); 
+        rodape.setLayout(new BorderLayout()); 
+        rodape.add(dadoEBotao, BorderLayout.CENTER);
 			
 		MatrizTerreno jogo1 = new MatrizTerreno(this.variaveisInicializacao);
 		jogo1.inicializarElementos();
@@ -150,7 +173,6 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		this.add(camadas,BorderLayout.CENTER);
 		this.add(rodape, BorderLayout.SOUTH);
 		this.revalidate();
-
 			
 	}
 
@@ -162,6 +184,7 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		int somaDados = dado1.getValorFace() + dado2.getValorFace();
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_UP: jogadores[vez].moverJogador(0, -1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila(); moverFrutasMochila(); break;
 		case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); vez = inverterVez(vez); colocaFrutasNaMochila();moverFrutasMochila(); break;
