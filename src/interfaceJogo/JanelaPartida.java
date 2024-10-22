@@ -108,7 +108,7 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 	    labelVezJogador = new JLabel("Vez de: " + vez);
 	    labelPontosMovimento = new JLabel("	Pontos Movimento: " + pontosMovimento);
 	    labelVezJogador.setPreferredSize(new Dimension(60, 25));
-	    labelPontosMovimento.setPreferredSize(new Dimension(120, 25));
+	    labelPontosMovimento.setPreferredSize(new Dimension(125, 25));
 	    labelVezJogador.setForeground(verdeEscuro);
 	    labelPontosMovimento.setForeground(verdeEscuro);
 	    
@@ -125,6 +125,8 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 	    	 		 dado1.rolarDado(); 
 	    	 		 dado2.rolarDado();
 	    	 		 pontosMovimento = dado1.getValorFace() + dado2.getValorFace();
+	    	 		
+
 	    	 		 dadosRolados = true;
 	    	 		 labelPontosMovimento.setText("Pontos Movimento: " + pontosMovimento);
 	    	 		 JanelaPartida.this.requestFocusInWindow();}
@@ -218,7 +220,10 @@ public class JanelaPartida extends JFrame implements KeyListener, ActionListener
 		  case KeyEvent.VK_DOWN: jogadores[vez].moverJogador(0, 1, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
 		  case KeyEvent.VK_RIGHT: jogadores[vez].moverJogador(1, 0, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
 		  case KeyEvent.VK_LEFT: jogadores[vez].moverJogador(-1, 0, variaveisInicializacao[0]); colocaFrutasNaMochila();moverFrutasMochila(); break;
-		}
+		  
+		  }
+		
+
 		
 		pontosMovimento--;
 		labelPontosMovimento.setText("Pontos Movimento: " + pontosMovimento);
