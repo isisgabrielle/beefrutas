@@ -16,6 +16,9 @@ public class Dados extends JPanel {
         ValorFace = random.nextInt(6) + 1;
         repaint();
     }
+    public int getValorFace() {
+        return ValorFace; 
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -31,43 +34,51 @@ public class Dados extends JPanel {
 
     private void drawDots(Graphics g, int ValorFace) {
         g.setColor(Color.BLACK);
+
         int[][] positions = {
-            {12, 12},             
-            {6, 6}, {18, 18},   
-            {6, 18}, {18, 6},   
-            {6, 6}, {18, 6}, {6, 18}, {18, 18}, 
-            {12, 12},             
-            {6, 12}, {18, 12}  
-    };
- 
+            {12, 12},              
+            {6, 6}, {18, 18},      
+            {6, 18}, {18, 6},      
+            {6, 12}, {18, 12}      
+        };
+
         switch (ValorFace) {
             case 1:
-                drawCircle(g, positions[0]); break;
+                drawCircle(g, positions[0]); 
+                break;
             case 2:
-                drawCircle(g, positions[1]);
-                drawCircle(g, positions[2]); break;
+                drawCircle(g, positions[1]); 
+                drawCircle(g, positions[2]); 
+                break;
             case 3:
-                drawCircle(g, positions[0]);
-                drawCircle(g, positions[1]);
-                drawCircle(g, positions[2]); break;
+                drawCircle(g, positions[0]); 
+                drawCircle(g, positions[1]); 
+                drawCircle(g, positions[2]); 
+                break;
             case 4:
-                drawCircle(g, positions[1]);
-                drawCircle(g, positions[2]);
-                drawCircle(g, positions[3]);
-                drawCircle(g, positions[4]); break;
+                drawCircle(g, positions[1]); 
+                drawCircle(g, positions[2]); 
+                drawCircle(g, positions[3]); 
+                drawCircle(g, positions[4]); 
+                break;
             case 5:
                 drawCircle(g, positions[0]);
                 drawCircle(g, positions[1]);
-                drawCircle(g, positions[2]);
-                drawCircle(g, positions[3]);
-                drawCircle(g, positions[4]); break;
+                drawCircle(g, positions[2]); 
+                drawCircle(g, positions[3]); 
+                drawCircle(g, positions[4]); 
+                break;
             case 6:
-                drawCircle(g, positions[1]);
-                drawCircle(g, positions[2]);
-                drawCircle(g, positions[5]);
-                drawCircle(g, positions[6]);
-                drawCircle(g, positions[3]);
-                drawCircle(g, positions[4]); break; } }
+                drawCircle(g, positions[1]); 
+                drawCircle(g, positions[2]); 
+                drawCircle(g, positions[3]); 
+                drawCircle(g, positions[4]); 
+                drawCircle(g, positions[5]); 
+                drawCircle(g, positions[6]); 
+                break;
+        }
+    }
+
 
     private void drawCircle(Graphics g, int[] pos) {
         int diametro = 5; // 
