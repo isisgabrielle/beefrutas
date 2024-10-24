@@ -33,13 +33,10 @@ public class Mochila extends JButton {
 		this.setIcon(image);
 	}
 
-
-    // Verifica se há espaço para mais frutas
     public boolean podeAdicionarFruta() {
         return frutas.size() < capacidade;
     }
 
-    // Adiciona fruta à mochila se houver espaço
     public boolean adicionarFruta(Fruta fruta) {
         System.out.println("Capacidade: " + capacidade + ", Frutas atuais: " + frutas.size());
         if (podeAdicionarFruta()) {
@@ -51,20 +48,17 @@ public class Mochila extends JButton {
         return false;
     }
 
-    // Remove uma fruta da mochila e a consome
     public Fruta consumirFruta() {
         if (!frutas.isEmpty()) {
-            return frutas.remove(frutas.size() - 1); // Remove a última fruta
+            return frutas.remove(frutas.size() - 1);
         }
-        return null; // Se não houver frutas
+        return null;
     }
 
-    // Retorna quantas frutas estão na mochila
     public int quantidadeFrutas() {
         return frutas.size();
     }
 
-    // Lista os tipos de frutas na mochila
     public List<Fruta> listarFrutas() {
         return frutas;
     }
