@@ -13,34 +13,30 @@ public class Jogador extends JLabel {
 	public String nome;
 	protected String urlIcone;
 	
-	// Construtor ajustado para inicializar a mochila
 	public Jogador(int x, int y, int tamanhoIcone, int idJogador, String nome, int capacidadeMochila){
 		if(idJogador == 0) {
 			urlIcone = "/imagens/jogador0.png";
-			mochila = new Mochila(capacidadeMochila, "Jogador0", tamanhoIcone);  // Inicializa a mochila do jogador 0
+			mochila = new Mochila(capacidadeMochila, "Jogador0", tamanhoIcone);
 		}
 		if(idJogador == 1) {
 			urlIcone = "/imagens/jogador1.png";
-			mochila = new Mochila(capacidadeMochila, "Jogador1", tamanhoIcone);  // Inicializa a mochila do jogador 1
+			mochila = new Mochila(capacidadeMochila, "Jogador1", tamanhoIcone);
 		}
 		this.tamanhoIcone = tamanhoIcone;
 		this.x = x;
 		this.y = y;
 		this.nome = nome;
 		this.setBounds(tamanhoIcone * x, tamanhoIcone * y, tamanhoIcone, tamanhoIcone);
-		
-		// Carrega o ícone do jogador
+	
 		ImageIcon image = new ImageIcon(TelaInicial.class.getResource(urlIcone));
 		image.setImage(image.getImage().getScaledInstance(tamanhoIcone, tamanhoIcone, 1));
 		this.setIcon(image);
 	}
-
-	// Adiciona fruta na mochila se possível
+	
 	public boolean pegarFruta(Fruta fruta) {
 		return mochila.adicionarFruta(fruta);
 	}
 
-	// Consome uma fruta da mochila
 	public Fruta consumirFruta() {
 		return mochila.consumirFruta();
 	}
@@ -49,7 +45,6 @@ public class Jogador extends JLabel {
         return mochila;
     }
 	
-	// Método para mover o jogador dentro dos limites do mapa
 	public void moverJogador(int moverX, int moverY, int limiteMovimento) {
 		if (this.x + moverX < limiteMovimento && this.x + moverX >= 0) {
 			this.x = this.x + moverX;
